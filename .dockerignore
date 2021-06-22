@@ -1,0 +1,11 @@
+.git
+Dockerfile
+.DS_Store
+.gitignore
+.dockerignore
+.gitlab-ci.yml
+
+.venv/
+/.vscode
+/.idea
+__pycahce__/
