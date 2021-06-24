@@ -25,6 +25,10 @@ class Sells_By_Client(Model):
                     "total": {"$sum": "$total"},
                     "subtotal": {"$sum": "$subtotal"},
                     "iva": {"$sum": "$iva"},
+                    "metodo_pago": {"$push": "$datos.MetodoPago"},
+                    "serie": {"$push": "$datos.Serie"},
+                    "folio": {"$push": "$datos.Folio"},
+                    "fechas": {"$push": "$datos.Fecha"},
                 }
             },
         ]
