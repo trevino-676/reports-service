@@ -1,4 +1,3 @@
-
 class Model(dict):
     __getattr__ = dict.get
     __delattr__ = dict.__delattr__
