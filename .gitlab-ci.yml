@@ -14,7 +14,6 @@ python-test:
     - apk add --no-cache g++ make libffi-dev
     - pip install --no-cache-dir -r requirements.txt
     - cat $CONFIGFILE > .env
-    - cat .env
   script:
     - python -m pytest --junitxml=report.xml
   artifacts:
