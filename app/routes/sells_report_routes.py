@@ -2,7 +2,7 @@ from flask import Blueprint, request, make_response
 from flask_cors import cross_origin
 from bson.json_util import dumps
 
-from app.services import sells_by_clients_service, protected_route
+from app.services import sells_by_clients_service
 from app.utils import make_filters
 
 
@@ -13,7 +13,6 @@ sells_by_client_routes = Blueprint(
 
 @sells_by_client_routes.route("/by_client", methods=["GET"])
 @cross_origin()
-@protected_route()
 def sells_by_client():
     from_date = request.args.get("from_date")
     to_date = request.args.get("to_date")

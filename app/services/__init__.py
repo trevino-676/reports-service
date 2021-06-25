@@ -1,4 +1,4 @@
-from app.services.authentication import protected_route
+from app.services.authentication import token_required
 from app.services.service import ReportService
 from app.services.sells_by_clients import SellsByUsersService
 from app.repository import sells_clients_repo
