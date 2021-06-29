@@ -14,12 +14,14 @@ sells_by_client_routes = Blueprint(
 @sells_by_client_routes.route("/by_client", methods=["GET"])
 @cross_origin()
 def sells_by_client():
+    company_rfc = request.args.get("datos.Rfc")
     from_date = request.args.get("from_date")
     to_date = request.args.get("to_date")
     amount = request.args.get("amount")
     status = request.args.get("status")
     rfc = request.args.get("rfc")
     filters = make_filters(
+        company_rfc=company_rfc,
         from_date=from_date,
         to_date=to_date,
         amount=amount,

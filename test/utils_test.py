@@ -36,7 +36,7 @@ def test_date_and_extra_filters():
 def test_real_example_filters():
     expected = {
         "datos.Fecha": {"$gte": "2021-05-24", "$lte": "2021-06-25"},
-        "datos.Rfc": "1",
+        "Receptor.Rfc": "1",
     }
     result = make_filters(
         from_date="2021-05-24", to_date="2021-06-25", date_field="datos.Fecha", rfc=1
