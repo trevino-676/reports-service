@@ -44,9 +44,11 @@ def sells_by_client():
 @sells_by_client_routes.route("/by_items", methods=["GET"])
 @cross_origin()
 def sells_by_items():
+    company_rfc = request.args.get("datos.Rfc")
     to_date = request.args.get("to_date")
     from_date = request.args.get("from_date")
     filters = make_filters(
+        company_rfc=company_rfc,
         date_field="datos.Fecha",
         from_date=from_date,
         to_date=to_date,
