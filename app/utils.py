@@ -29,6 +29,8 @@ def __change_key_names(filters):
             new_filters["datos.Total"] = value
         elif key == "company_rfc":
             new_filters["datos.Rfc"] = value
+        else:
+            new_filters[key] = value
         # elif "status" in filters:
         #     filters["datos.Estado"] = filters["status"]
         #     filters.pop("status")
