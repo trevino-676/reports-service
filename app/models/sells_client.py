@@ -29,6 +29,9 @@ class Sells_By_Client(Model):
                     "serie": {"$push": "$datos.Serie"},
                     "folio": {"$push": "$datos.Folio"},
                     "fechas": {"$push": "$datos.Fecha"},
+                    "total_por_factura": {"$push": {"$toDouble": "$datos.Total"}},
+                    "subtotal_por_factura": {"$push": {"$toDouble": "$datos.SubTotal"}},
+                    "iva_por_factura": {"$push": {"$toDouble": "$impuestos.TrasladoIVA"}},
                 }
             },
         ]

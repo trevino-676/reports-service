@@ -21,17 +21,16 @@ def make_filters(**kwargs) -> dict:
 
 
 def __change_key_names(filters):
-    if "rfc" in filters:
-        filters["Receptor.Rfc"] = filters["rfc"]
-        filters.pop("rfc")
-    elif "amount" in filters:
-        filters["datos.Total"] = filters["amount"]
-        filters.pop("amount")
-    elif "company_rfc" in filters:
-        filters["datos.Rfc"] = filters["company_rfc"]
-        filters.pop("company_rfc")
-    # elif "status" in filters:
-    #     filters["datos.Estado"] = filters["status"]
-    #     filters.pop("status")
+    new_filters = {}
+    for key, value in filters.items():
+        if key == "rfc":
+            new_filters["Receptor.Rfc"] = value
+        elif key == "amount":
+            new_filters["datos.Total"] = value
+        elif key == "company_rfc":
+            new_filters["datos.Rfc"] = value
+        # elif "status" in filters:
+        #     filters["datos.Estado"] = filters["status"]
+        #     filters.pop("status")
 
-    return filters
+    return new_filters
