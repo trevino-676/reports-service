@@ -4,7 +4,6 @@ from bson.json_util import dumps
 
 from app.services import sells_by_clients_service, sells_by_items_service
 from app.utils import make_filters
-from app import app
 
 
 sells_by_client_routes = Blueprint(
@@ -30,7 +29,6 @@ def sells_by_client():
         rfc=rfc,
         date_field="datos.Fecha",
     )
-    app.logger.info(filters)
     report = sells_by_clients_service.get_report(filters)
     if not report:
         resp = make_response(
