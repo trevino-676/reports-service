@@ -13,7 +13,7 @@ class TaxablesPerceptionsRepository(ReportRepository):
                 return None
 
             for item in report:
-                item["uuid"] == uuid.uuid4().hex
+                item["uuid"] = uuid.uuid4().hex
 
             return report
         except Exception as e:

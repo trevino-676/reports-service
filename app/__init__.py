@@ -14,3 +14,7 @@ mongo = PyMongo(app, authSource="admin")
 from app.routes import sells_by_client_routes
 
 app.register_blueprint(sells_by_client_routes)
+
+from app.routes import payroll_routes
+
+app.register_blueprint(payroll_routes)

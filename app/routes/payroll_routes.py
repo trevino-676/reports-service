@@ -9,7 +9,7 @@ from app.utils import make_filters
 payroll_routes = Blueprint("payroll_routes", __name__, url_prefix="/v1/payroll/reports")
 
 
-@payroll_routes("/taxables_perceptions", methods=["GET"])
+@payroll_routes.route("/taxables_perceptions", methods=["GET"])
 @cross_origin()
 def taxables_perceptions():
     company_rfc = request.args.get("datos.Rfc")
