@@ -37,3 +37,14 @@ def test_get_sells_by_items_report(headers):
     assert 200 == response.status_code
     assert response.json["status"] is True
     assert len(response.json["data"]) > 0
+
+
+def test_get_sells_by_service_report(headers):
+    test_app = app.test_client()
+    headers = headers
+    response = test_app.get(
+        "/v1/sellsreport/by_services?datos.Rfc=SED160404EK6", headers=headers
+    )
+    assert 200 == response.status_code
+    assert response.json["status"] is True
+    assert len(response.json["data"]) > 0
