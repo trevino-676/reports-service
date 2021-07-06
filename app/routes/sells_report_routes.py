@@ -2,7 +2,11 @@ from flask import Blueprint, request, make_response
 from flask_cors import cross_origin
 from bson.json_util import dumps
 
-from app.services import sells_by_clients_service, sells_by_items_service
+from app.services import (
+    sells_by_clients_service,
+    sells_by_items_service,
+    sells_by_services_service,
+)
 from app.utils import make_filters
 
 
@@ -55,6 +59,27 @@ def sells_by_items():
     )
     report = sells_by_items_service.get_report(filters)
 
+    if not report:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos."}), 404
+        )
+
+    return make_response(dumps({"status": True, "data": report}), 200)
+
+
+@sells_by_client_routes.route("/by_services", methods=["GET"])
+@cross_origin()
+def sells_by_service():
+    company_rfc = request.args.get("datos.Rfc")
+    to_date = request.args.get("to_date")
+    from_date = request.args.get("from_date")
+    filters = make_filters(
+        company_rfc=company_rfc,
+        date_field="datos.Fecha",
+        from_date=from_date,
+        to_date=to_date,
+    )
+    report = sells_by_services_service.get_report(filters)
     if not report:
         return make_response(
             dumps({"status": False, "message": "No se encontraron datos."}), 404
