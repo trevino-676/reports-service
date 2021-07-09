@@ -25,6 +25,7 @@ class SellsByItems(Model):
                 }
             },
             {"$match": {"_id.codigo": {"$nin": ["01010101"]}}},
+            {"$sort": {"_id.articulo": 1}},
         ]
         sells = cls.collection.aggregate(pipeline=pipeline)
         return list(sells)

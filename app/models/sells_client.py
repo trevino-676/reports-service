@@ -35,6 +35,7 @@ class Sells_By_Client(Model):
                     "iva_por_factura": {"$push": "$iva"},
                 }
             },
+            {"$sort": { "_id": 1 }},
         ]
 
         sells = cls.collection.aggregate(pipeline=pipeline)

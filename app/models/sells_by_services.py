@@ -30,6 +30,7 @@ class SellsByServices(Model):
                     "importe": {"$sum": {"$toDouble": "$conceptos.Detalles.Importe"}},
                 }
             },
+            {"$sort": {"_id.servicio": 1}},
         ]
         sells = cls.collection.aggregate(pipeline=pipeline)
         return list(sells)

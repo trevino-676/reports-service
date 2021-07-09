@@ -40,6 +40,7 @@ class TaxablesPerceptions(Model):
                     },
                 }
             },
+            {"$sort": {"_id.empleado": 1}},
         ]
         data = cls.collection.aggregate(pipeline=pipeline)
         return list(data)
