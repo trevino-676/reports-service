@@ -24,6 +24,7 @@ def sells_by_client():
     amount = request.args.get("amount")
     status = request.args.get("status")
     rfc = request.args.get("rfc")
+    name = request.args.get("name")
     filters = make_filters(
         company_rfc=company_rfc,
         from_date=from_date,
@@ -32,6 +33,7 @@ def sells_by_client():
         status=status,
         rfc=rfc,
         date_field="datos.Fecha",
+        name=name
     )
     report = sells_by_clients_service.get_report(filters)
     if not report:

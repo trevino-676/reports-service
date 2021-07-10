@@ -16,12 +16,14 @@ def taxables_perceptions():
     to_date = request.args.get("to_date")
     from_date = request.args.get("from_date")
     rfc = request.args.get("rfc")
+    name = request.args.get("name")
     filters = make_filters(
         company_rfc=company_rfc,
         from_date=from_date,
         to_date=to_date,
         rfc=rfc,
         date_field="datos.Fecha",
+        name=name
     )
     data = taxables_perceptions_service.get_report(filters)
     if not data:

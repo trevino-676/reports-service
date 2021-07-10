@@ -16,6 +16,8 @@ def make_filters(**kwargs) -> dict:
     if "date_field" in kwargs:
         kwargs.pop("date_field")
     filters = {key: str(value) for key, value in kwargs.items() if value is not None}
+    if "name" in filters:
+        filters["name"] = filters["name"].replace("+", " ")
     filters = __change_key_names(filters)
     return filters | date_filters
 
@@ -29,6 +31,8 @@ def __change_key_names(filters):
             new_filters["datos.Total"] = value
         elif key == "company_rfc":
             new_filters["datos.Rfc"] = value
+        elif key == "name":
+            new_filters["Receptor.Nombre"] = value
         else:
             new_filters[key] = value
         # elif "status" in filters:
