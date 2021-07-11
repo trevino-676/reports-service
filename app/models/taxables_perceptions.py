@@ -14,32 +14,21 @@ class TaxablesPerceptions(Model):
     def get_taxables_perceptions(cls, filters: dict) -> list:
         pipeline = [
             {"$match": filters},
-            {"$unwind": "$nomina.Percepciones.Percepcion"},
-            {
-                "$group": {
-                    "_id": {"empleado": "$Receptor.Nombre", "rfc": "$Receptor.Rfc"},
-                    "total_grabado": {
-                        "$sum": {"$toDouble": "$nomina.Percepciones.TotalGravado"}
-                    },
-                    "total_sueldo": {
-                        "$sum": {"$toDouble": "$nomina.Percepciones.TotalSueldos"}
-                    },
-                    "total_exento": {
-                        "$sum": {"$toDouble": "$nomina.Percepciones.TotalExento"}
-                    },
-                    "tipo_percepcion": {
-                        "$push": "$nomina.Percepciones.Percepcion.TipoPercepcion"
-                    },
-                    "claves": {"$push": "$nomina.Percepciones.Percepcion.Clave"},
-                    "conceptos": {"$push": "$nomina.Percepciones.Percepcion.Concepto"},
-                    "importes_gravados": {
-                        "$push": "$nomina.Percepciones.Percepcion.ImporteGravado"
-                    },
-                    "importes_exento": {
-                        "$push": "$nomina.Percepciones.Percepcion.ImporteExento"
-                    },
-                }
-            },
+            {"$addFields": {"percepciones": "$nomina.Percepciones.Percepcion"}},
+            {"$unwind": "$percepciones"},
+            {"$group": {
+                "_id": {"empleado": "$Receptor.Nombre", "rfc": "$Receptor.Rfc"},
+                "total_grabado": {"$sum": {"$toDouble": "$percepciones.ImporteGravado"}},
+                "total_exento": {"$sum": {"$toDouble": "$percepciones.ImporteExento"}},
+                "tipo_percepcion": {"$push": "$percepciones.TipoPercepcion"},
+                "claves": {"$push": "$percepciones.Clave"},
+                "conceptos": {"$push": "$percepciones.Concepto"},
+                "importes_gravados": {"$push": "$percepciones.ImporteGravado"},
+                "importes_exento": {"$push": "$percepciones.ImporteExento"}
+            }},
+            {"$addFields": {
+                "total_sueldo": {"$sum": ["$total_grabado", "$total_exento"]}
+            }},
             {"$sort": {"_id.empleado": 1}},
         ]
         data = cls.collection.aggregate(pipeline=pipeline)
