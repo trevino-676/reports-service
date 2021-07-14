@@ -9,6 +9,7 @@ class RetentionRepository(Repository):
     """
     Esta clase contiene el metodo para obtener el reporte.
     """
+
     def get_report(self, filters: dict) -> list:
         """
         Manda a llamar el metodo para generar la informacion del
@@ -30,4 +31,3 @@ class RetentionRepository(Repository):
         except Exception as e:
             app.logger.error(e)
             return None
-
