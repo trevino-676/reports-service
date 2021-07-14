@@ -14,10 +14,12 @@ retention_routes = Blueprint(
 @retention_routes.route("/", methods=["GET"])
 @cross_origin()
 def retention_report():
+    company_rfc = request.args.get("datos.Rfc")
     retention_type = request.args.get("type")
     from_date = request.args.get("from_date")
     to_date = request.args.get("to_date")
     filters = make_filters(
+        company_rfc=company_rfc,
         retention_type=retention_type,
         from_date=from_date,
         to_date=to_date,

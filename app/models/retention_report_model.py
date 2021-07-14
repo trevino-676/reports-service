@@ -25,18 +25,18 @@ class RetentionReportModel(Model):
             encontraron en la base de datos.
         """
         pipeline = [
-            {"$match": filters},
             {"$unwind": "$conceptos"},
             {"$addFields": {"impuesto": "$conceptos.Impuestos"}},
             {"$unwind": "$impuesto"},
+            {"$match": filters},
             {
                 "$unionWith": {
                     "coll": "nomina",
                     "pipeline": [
-                        {"$match": filters},
                         {"$unwind": "$conceptos"},
                         {"$addFields": {"impuesto": "$conceptos.Impuestos"}},
                         {"$unwind": "$impuesto"},
+                        {"$match": filters},
                     ],
                 }
             },

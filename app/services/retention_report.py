@@ -1,5 +1,6 @@
 from app.repository import RetentionRepository
 from app.services import ReportService
+from app import app
 
 
 class RetentionReportService(ReportService):
@@ -18,4 +19,8 @@ class RetentionReportService(ReportService):
         Returns:
             Lista con los datos del reporte.
         """
-        return self.repository.get_report(filters)
+        try:
+            return self.repository.get_report(filters)
+        except Exception as e:
+            app.logger.error(e)
+            return None

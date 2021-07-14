@@ -33,6 +33,8 @@ def __change_key_names(filters):
             new_filters["datos.Rfc"] = value
         elif key == "name":
             new_filters["Receptor.Nombre"] = value
+        elif key == "retention_type":
+            new_filters["impuesto.Impuesto"] = value
         else:
             new_filters[key] = value
         # elif "status" in filters:

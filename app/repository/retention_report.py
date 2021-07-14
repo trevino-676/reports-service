@@ -2,7 +2,6 @@ import uuid
 
 from app.models import RetentionReportModel
 from app.repository import Repository
-from app import app
 
 
 class RetentionRepository(Repository):
@@ -28,6 +27,7 @@ class RetentionRepository(Repository):
             for item in report:
                 item["uuid"] = uuid.uuid4().hex
             return report
-        except Exception as e:
-            app.logger.error(e)
-            return None
+        except Exception:
+            raise Exception(
+                "Hubo un error al consultar la informacion en la base de datos"
+            )
