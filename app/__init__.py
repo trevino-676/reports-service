@@ -18,3 +18,7 @@ app.register_blueprint(sells_by_client_routes)
 from app.routes import payroll_routes
 
 app.register_blueprint(payroll_routes)
+
+from app.routes import retention_routes
+
+app.register_blueprint(retention_routes)
