@@ -1,10 +1,10 @@
 import uuid
 
 from app.models import RetentionReportModel
-from app.repository import Repository
+from app.repository import ReportRepository
 
 
-class RetentionRepository(Repository):
+class RetentionRepository(ReportRepository):
     """
     Esta clase contiene el metodo para obtener el reporte.
     """

@@ -8,7 +8,7 @@ class RetentionReportModel(Model):
     de retenciones
     """
 
-    collection_name = app.config["RETENTION_COLLECTION"]
+    collection_name = app.config["PRINCIPAL_COLLECTION"]
     collection = mongo.db[collection_name]
 
     @classmethod
