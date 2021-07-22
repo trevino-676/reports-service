@@ -31,3 +31,4 @@ def test_get_retentions_report(headers):
     assert 200 == response.status_code
     assert response.json["status"] is True
     assert len(response.json["data"]) > 0
+    
