@@ -13,3 +13,21 @@ class Sells_By_Client_Repository(ReportRepository):
         except Exception as e:
             app.logger.error(e)
             return None
+
+    def get_detail_report(self, filters: dict):
+        try:
+            data = Sells_By_Client.sells_details_report(filters)
+            if len(data) == 0:
+                return None
+            return data
+        except Exception as e:
+            app.logger.error(e)
+            return None
+
+    def get_total_report(self, filters: dict):
+        try:
+            data = Sells_By_Client.get_total_sells(filters)
+            return data
+        except Exception as e:
+            app.logger.error(e)
+            return None

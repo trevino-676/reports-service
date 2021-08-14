@@ -48,3 +48,32 @@ def test_get_sells_by_service_report(headers):
     assert 200 == response.status_code
     assert response.json["status"] is True
     assert len(response.json["data"]) > 0
+
+
+def test_detail_sells_report(headers):
+    test_app = app.test_client()
+    f_date = "2021-05-01T00:00:00"
+    t_date = "2021-05-31T23:59:59"
+    rfc = "PGT190401156"
+    response = test_app.get(
+        f"/v1/sellsreport/detailed?datos.Rfc={rfc}&from_date={f_date}&to_date={t_date}",
+        headers=headers,
+    )
+
+    assert 200 == response.status_code
+    assert response.json["status"] is True
+
+
+def test_total_sells(headers):
+    test_app = app.test_client()
+    f_date = "2021-05-01T00:00:00"
+    t_date = "2021-05-31T23:59:59"
+    rfc = "PGT190401156"
+
+    response = test_app.get(
+        f"/v1/sellsreport/total?datos.Rfc={rfc}&from_date={f_date}&to_date={t_date}",
+        headers=headers,
+    )
+
+    assert 200 == response.status_code
+    assert response.json["status"] is True

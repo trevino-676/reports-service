@@ -35,8 +35,49 @@ class Sells_By_Client(Model):
                     "iva_por_factura": {"$push": "$iva"},
                 }
             },
-            {"$sort": { "_id": 1 }},
+            {"$sort": {"_id": 1}},
         ]
 
         sells = cls.collection.aggregate(pipeline=pipeline)
         return list(sells)
+
+    @classmethod
+    def sells_details_report(cls, filters):
+        pipeline = [
+            {"$match": filters},
+            {
+                "$set": {
+                    "folio_fiscal": "$_id",
+                    "receptor": "$Receptor.Nombre",
+                    "receptor_rfc": "$Receptor.Rfc",
+                    "fecha": "$datos.Fecha",
+                    "metodo_pago": "$datos.MetodoPago",
+                    "moneda": "$datos.Moneda",
+                    "folio": "$datos.Folio",
+                    "serie": "$datos.Serie",
+                    "total": "$datos.Total",
+                    "subtotal": "$datos.SubTotal",
+                    "impuesto": "$impuestos.TrasladoIVA",
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "datos": 0,
+                    "Receptor": 0,
+                    "impuestos": 0,
+                    "conceptos": 0,
+                }
+            },
+        ]
+        data = cls.collection.aggregate(pipeline=pipeline)
+        return list(data)
+
+    @classmethod
+    def get_total_sells(cls, filters: dict):
+        pipeline = [
+            {"$match": filters},
+            {"$group": {"_id": "$datos.Rfc", "total": {"$sum": "$datos.Total"}}},
+        ]
+        total = cls.collection.aggregate(pipeline=pipeline)
+        return list(total)[0]

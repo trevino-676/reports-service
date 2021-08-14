@@ -33,7 +33,7 @@ def sells_by_client():
         status=status,
         rfc=rfc,
         date_field="datos.Fecha",
-        name=name
+        name=name,
     )
     report = sells_by_clients_service.get_report(filters)
     if not report:
@@ -87,6 +87,40 @@ def sells_by_service():
             dumps({"status": False, "message": "No se encontraron datos."}), 404
         )
 
+    return make_response(dumps({"status": True, "data": report}), 200)
+
+
+@sells_by_client_routes.route("/detailed", methods=["GET"])
+@cross_origin()
+def sells_detailed():
+    filters = make_filters(
+        company_rfc=request.args["datos.Rfc"],
+        date_field="datos.Fecha",
+        from_date=request.args["from_date"],
+        to_date=request.args["to_date"],
+    )
+    report = sells_by_clients_service.get_detail_report(filters)
+    if not report:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos."}), 404
+        )
+    return make_response(dumps({"status": True, "data": report}), 200)
+
+
+@sells_by_client_routes.route("/total", methods=["GET"])
+@cross_origin()
+def total_sells():
+    filters = make_filters(
+        company_rfc=request.args["datos.Rfc"],
+        date_field="datos.Fecha",
+        from_date=request.args["from_date"],
+        to_date=request.args["to_date"],
+    )
+    report = sells_by_clients_service.get_total_report(filters)
+    if not report:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos."}), 404
+        )
     return make_response(dumps({"status": True, "data": report}), 200)
 
 

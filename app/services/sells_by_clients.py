@@ -8,3 +8,9 @@ class SellsByUsersService(ReportService):
 
     def get_report(self, filters: dict):
         return self.repository.get_report(filters)
+
+    def get_detail_report(self, filters: dict):
+        return self.repository.get_detail_report(filters)
+
+    def get_total_report(self, filters: dict):
+        return self.repository.get_total_report(filters)
