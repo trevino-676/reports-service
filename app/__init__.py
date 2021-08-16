@@ -22,3 +22,7 @@ app.register_blueprint(payroll_routes)
 from app.routes import retention_routes
 
 app.register_blueprint(retention_routes)
+
+from app.routes.provider_routes import detailed_routes
+
+app.register_blueprint(detailed_routes)
