@@ -81,3 +81,19 @@ class Sells_By_Client(Model):
         ]
         total = cls.collection.aggregate(pipeline=pipeline)
         return list(total)[0]
+
+    @classmethod
+    def get_top_sells(cls, filters: dict):
+        pipeline = [
+            {"$match": filters},
+            {
+                "$group": {
+                    "_id": {"rfc": "$Receptor.Rfc", "nombre": "$Receptor.Nombre"},
+                    "total": {"$sum": {"$toDouble": "$datos.Total"}},
+                }
+            },
+            {"$sort": {"total": 1}},
+            {"$limit": 5},
+        ]
+        data = cls.collection.aggregate(pipeline)
+        return list(data)

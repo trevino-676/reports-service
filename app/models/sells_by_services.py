@@ -34,3 +34,25 @@ class SellsByServices(Model):
         ]
         sells = cls.collection.aggregate(pipeline=pipeline)
         return list(sells)
+
+    @classmethod
+    def get_top_by_service(cls, filters):
+        pipeline = [
+            {"$match": filters},
+            {"$unwind": "$conceptos"},
+            {
+                "$match": {
+                    "conceptos.Detalles.ClaveUnidad": {"$in": ["E48", "ACT", "AS", "E54"]}
+                }
+            },
+            {
+                "$group": {
+                    "_id": {"servicio": "$conceptos.Detalles.Descripcion"},
+                    "importe": {"$sum": {"$toDouble": "$conceptos.Detalles.Importe"}},
+                }
+            },
+            {"$sort": {"importe": 1}},
+            {"$limit": 5},
+        ]
+        data = cls.collection.aggregate(pipeline)
+        return list(data)
