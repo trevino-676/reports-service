@@ -8,3 +8,6 @@ class SellsByItemsService(ReportService):
 
     def get_report(self, filters: dict):
         return self.repository.get_report(filters)
+
+    def get_top_by_items(self, filters):
+        return self.repository.get_top_by_items(filters)

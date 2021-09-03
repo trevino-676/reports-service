@@ -14,3 +14,6 @@ class SellsByUsersService(ReportService):
 
     def get_total_report(self, filters: dict):
         return self.repository.get_total_report(filters)
+
+    def get_top_by_clients(self, filters):
+        return self.repository.get_top_by_clients(filters)
