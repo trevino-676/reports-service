@@ -10,4 +10,4 @@ class SellsByServicesService(ReportService):
         return self.repository.get_report(filters)
 
     def get_top_by_services(self, filters):
-        return self.repository.get_top_by_service
+        return self.repository.get_top_by_service(filters)
