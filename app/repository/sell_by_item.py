@@ -17,3 +17,11 @@ class SellsByItemsRepository(ReportRepository):
         except Exception as e:
             app.logger.error(e)
             return None
+
+    def get_top_by_items(self, filters):
+        try:
+            data = SellsByItems.get_top_by_items(filters)
+            return data
+        except Exception as e:
+            app.logger.error(e)
+            return None

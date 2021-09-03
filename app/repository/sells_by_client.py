@@ -31,3 +31,11 @@ class Sells_By_Client_Repository(ReportRepository):
         except Exception as e:
             app.logger.error(e)
             return None
+
+    def get_top_by_clients(self, filters):
+        try:
+            data = Sells_By_Client.get_top_sells(filters)
+            return data
+        except Exception as e:
+            app.logger.error(e)
+            return None

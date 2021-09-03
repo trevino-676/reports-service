@@ -19,3 +19,11 @@ class SellsByServicesRepository(ReportRepository):
         except Exception as e:
             app.logger.error(e)
             return None
+
+    def get_top_by_service(self, filters):
+        try:
+            data = SellsByServices.get_top_by_service(filters)
+            return data
+        except Exception as e:
+            app.logger.error(e)
+            return None
