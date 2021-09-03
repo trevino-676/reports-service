@@ -124,6 +124,57 @@ def total_sells():
     return make_response(dumps({"status": True, "data": report}), 200)
 
 
+@sells_by_client_routes.route("/top/clients", methods=["GET"])
+@cross_origin()
+def get_top_by_clients():
+    filters = make_filters(
+        company_rfc=request.args["datos.Rfc"],
+        date_field="datos.Fecha",
+        from_date=request.args["from_date"],
+        to_date=request.args["to_date"],
+    )
+    report = sells_by_clients_service.get_top_by_clients(filters)
+    if not report:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos"}), 404
+        )
+    return make_response(dumps({"status": True, "data": report}), 200)
+
+
+@sells_by_client_routes.route("/top/items", methods=["GET"])
+@cross_origin()
+def get_top_by_items():
+    filters = make_filters(
+        company_rfc=request.args["datos.Rfc"],
+        date_field="datos.Fecha",
+        from_date=request.args["from_date"],
+        to_date=request.args["to_date"],
+    )
+    report = sells_by_items_service.get_top_by_items(filters)
+    if not report:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos"}), 404
+        )
+    return make_response(dumps({"status": True, "data": report}), 200)
+
+
+@sells_by_client_routes.route("/top/service", methods=["GET"])
+@cross_origin()
+def get_top_by_service():
+    filters = make_filters(
+        company_rfc=request.args["datos.Rfc"],
+        date_field="datos.Fecha",
+        from_date=request.args["from_date"],
+        to_date=request.args["to_date"],
+    )
+    report = sells_by_services_service.get_top_by_services(filters)
+    if not report:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos"}), 404
+        )
+    return make_response(dumps({"status": True, "data": report}), 200)
+
+
 @sells_by_client_routes.after_request
 def after_request(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
