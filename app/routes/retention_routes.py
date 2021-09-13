@@ -32,6 +32,25 @@ def retention_report():
             404,
         )
     return make_response(dumps({"status": True, "data": report_data}), 200)
+@retention_routes.route("/nominas", methods=["GET"])
+@cross_origin() 
+def nominas():
+    empresa      =  request.args.get('empresa') 
+    empleado     =  request.args.get('empleado') 
+    dataFrom     =  request.args.get('from') 
+    dataTo       =  request.args.get('to')  
+
+    filters = make_filters(
+        company_rfc=empresa,
+        from_date=dataFrom,
+        to_date=dataTo,
+        date_field="datos.Fecha",
+    ) 
+
+    filters = [ { "empresa" : empresa, "empleado" : empleado, "dataFrom" : dataFrom, "dataTo" : dataTo }]
+    report_data = retention_service.get_report_nomina(filters)  
+    
+    return make_response(dumps( report_data ), 200)
 
 
 @retention_routes.after_request
