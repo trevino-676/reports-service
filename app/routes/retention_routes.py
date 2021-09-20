@@ -12,7 +12,7 @@ retention_routes = Blueprint(
 
 
 @retention_routes.route("/", methods=["GET"])
-@cross_origin()
+@cross_origin() 
 def retention_report():
     company_rfc = request.args.get("datos.Rfc")
     retention_type = request.args.get("type")
@@ -32,6 +32,35 @@ def retention_report():
             404,
         )
     return make_response(dumps({"status": True, "data": report_data}), 200)
+@retention_routes.route("/comprasDelMes", methods=["GET"])
+@cross_origin() 
+def comprasDelMes():
+    company_rfc = request.args.get("receptor")
+  
+    filters = {'receptor' : company_rfc}
+    report_data = retention_service.getComprasDelMes(filters)
+
+    if not report_data:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos en el reporte"}),
+            404,
+        )
+    return make_response( report_data, 200)
+@retention_routes.route("/topCompras", methods=["GET"])
+@cross_origin() 
+def topCompras():
+    company_rfc = request.args.get("receptor")
+ 
+    filters = {'receptor' : company_rfc}
+    report_data = retention_service.getTopCompras(filters)
+
+    if not report_data:
+        return make_response(
+            dumps({"status": False, "message": "No se encontraron datos en el reporte"}),
+            404,
+        )
+    return make_response( report_data, 200)
+
 @retention_routes.route("/nominas", methods=["GET"])
 @cross_origin() 
 def nominas():
@@ -39,18 +68,32 @@ def nominas():
     empleado     =  request.args.get('empleado') 
     dataFrom     =  request.args.get('from') 
     dataTo       =  request.args.get('to')  
-
-    filters = make_filters(
-        company_rfc=empresa,
-        from_date=dataFrom,
-        to_date=dataTo,
-        date_field="datos.Fecha",
-    ) 
-
+  
     filters = [ { "empresa" : empresa, "empleado" : empleado, "dataFrom" : dataFrom, "dataTo" : dataTo }]
     report_data = retention_service.get_report_nomina(filters)  
     
     return make_response(dumps( report_data ), 200)
+@retention_routes.route("/efos", methods=["GET"])
+@cross_origin() 
+def efos(): 
+    empresa = ""
+    filters = [ { "cliente" : empresa }]
+    report_data = retention_service.getEfos(filters)  
+    return make_response(dumps( report_data ), 200)
+
+@retention_routes.route("/comprasPorProveedor", methods=["GET"])
+@cross_origin() 
+def comprasPorProveedor():
+    receptor     =  request.args.get('receptor') 
+    emisor       =  request.args.get('emisor') 
+    dataFrom     =  request.args.get('from') 
+    dataTo       =  request.args.get('to')  
+
+
+    filters = [ { "receptor" : receptor, "emisor" : emisor, "dataFrom" : dataFrom, "dataTo" : dataTo }]
+    report_data = retention_service.comprasPorProveedor(filters)  
+         
+    return make_response( dumps( report_data ), 200)
 
 
 @retention_routes.after_request

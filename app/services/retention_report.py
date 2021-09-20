@@ -30,24 +30,164 @@ class RetentionReportService(ReportService):
         except Exception as e:
             app.logger.error(e)
             return None
+    def getComprasDelMes(self, filters: dict):
+        try: 
+            client = MongoClient("mongodb://root:drumb0t2o21@3.141.244.21:27017")
+            db2         = client["cfdi"];
+            principal   = db2["principal"]
+  
+            date_from = "2021-08-01"
+            date_to = "2021-08-28"
+      
+            filter_date = {"$gte":  date_from, "$lte":  date_to}
+            rfc_receptor = "PGT190401156" 
+            #{"$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date }}, 
+            col_principal = principal.aggregate([ {"$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date }}, 
+                                                  {"$group": {"_id": "..", "i": {"$sum": "$datos.Total"}}}])  
+
+            col_principal = principal.aggregate([ {"$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date }} ])
+
+            total = 0 
+            for compra in col_principal: 
+                total += float(compra['datos']["Total"])
+
+            col_principal = list(col_principal) 
+                 
+            return json.dumps({"elements": total })
+        except Exception as e:
+            app.logger.error(e)
+            return None
+    def getTopCompras(self, filters: dict):
+        try: 
+            client = MongoClient("mongodb://root:drumb0t2o21@3.141.244.21:27017")
+            db2         = client["cfdi"];
+            principal   = db2["principal"]
+
+            date_from = "2021-07-01"
+            date_to = "2021-08-31"
+      
+            filter_date = {"$gte":  date_from, "$lte":  date_to}
+            rfc_receptor = filters["receptor"] 
+            #{"$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date }}, 
+            col_principal = principal.aggregate([ {"$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date }}, 
+                                                  {"$group": {"_id": "$datos.Nombre", "i": {"$sum": "$datos.Total"}}},
+                                                  {"$sort": {"i": -1}}, {"$limit": 4}])  
+            col_principal = list(col_principal) 
+        
+            empresas_list = [ ['Proveedores', 'Compras'] ]
+ 
+            for empresa in col_principal: 
+                empresas_list.append( [ empresa["_id"], empresa["i"] ]) 
+
+            return json.dumps({"elements": empresas_list })
+        except Exception as e:
+            app.logger.error(e)
+            return None
+    def getEfos(self, filters: dict):
+        try:
+            client = MongoClient("mongodb://root:drumb0t2o21@3.141.244.21:27017")
+            db          = client["robin_hood"];
+            db2         = client["cfdi"];
+            collection  = db["suppliers"]
+            principal   = db2["principal"] 
+            
+            efos = collection.find({"Efo": {"$exists": "true"}}, {"_id": 1, "Nombre": 1}) 
+            
+            total = 0 
+            list_efos = []
+
+            for efo in efos: 
+                cantidad = 0 
+                total = 0 
+                col_principal = principal.find({"datos.Rfc": efo["_id"], "Receptor.Rfc": "PGT190401156"}, {"datos.Total": 1, "datos.Nombre": 1})
+                nombre = ""
+                for factura in col_principal:   
+                    total += float(factura["datos"]["Total"])  
+                    nombre = factura["datos"]["Nombre"]
+                    cantidad+=1 
+                list_efos.append( { "Nombre" : locale.currency( float(total), grouping=True), 
+                                    "_id": efo["_id"], 
+                                    "Empresa": nombre, 
+                                    "cantidad": cantidad}) 
+                 
+            col_principal = list(col_principal)      
+            return {"elements": list(list_efos) } 
+        except Exception as e:
+            app.logger.error(e)
+            return None
+    def comprasPorProveedor(self, filters: dict):
+         
+        client     = MongoClient("mongodb://root:drumb0t2o21@3.141.244.21:27017")
+        db         = client["cfdi"]  
+
+        rfc_receptor =  filters[0]['receptor']  
+        rfc_emisor   =  filters[0]['emisor']   
+        dataFrom     =  filters[0]['dataFrom']   
+        dataTo       =  filters[0]['dataTo']
+
+        collection   = db["principal"] 
+        rfc_receptor = "PGT190401156"; 
+          
+        if dataFrom is None:  
+            dataFrom = "2021-03-01"
+        if dataTo is None: 
+            dataTo = "2021-05-02"
+
+        filter_date = {"$gte":  dataFrom, "$lte":  dataTo}
+        
+        if rfc_emisor is not None: 
+            res = collection.aggregate([ { "$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date, 
+                                                       "datos.Rfc": rfc_emisor }}, 
+                                         { "$group": { "_id": "$datos.Rfc",  } }, 
+                                         {"$limit": 10}  
+                                        ]) 
+        else: 
+            res = collection.aggregate([ { "$match": { "Receptor.Rfc": rfc_receptor, "datos.Fecha": filter_date }}, 
+                                         { "$group": { "_id": "$datos.Rfc",  } } 
+                                        ]) 
+
+        emisores_coll   = [] 
+        receptores_coll = [] 
+        row_facturas    = []
+        cant = 0 
+        for col in res: 
+            row_facturas    = []
+            cant = cant + 1 
+            total_fac       = 0
+            compras = collection.aggregate([ { "$match": { "Receptor.Rfc": rfc_receptor, "datos.Rfc": col["_id"], 
+                                                "datos.Fecha": filter_date } } ]) 
+            compras2 = collection.aggregate([ { "$match": { "Receptor.Rfc": rfc_receptor, "datos.Rfc": col["_id"], 
+                                                "datos.Fecha": filter_date } }, {"$limit": 1} ])
+            for com in compras: 
+                row_facturas.append( {"id": cant, "rfc": col["_id"], "Nombre": com["datos"]["Nombre"],
+                                      "MetodoPago": com["datos"]["MetodoPago"], 
+                                      "Fecha": datetime.fromisoformat(com["datos"]["Fecha"]).strftime("%d/%m/%Y"), "Total": locale.currency( float(com["datos"]["Total"]), grouping=True) , "SubTotal": locale.currency(float(com["datos"]["SubTotal"]), grouping=True) })  
+                total_fac = total_fac + float(com["datos"]["Total"])
+            for comp in compras2: 
+                receptores_coll.append( {"id" : cant, "rfc": comp["datos"]["Rfc"], "Nombre": comp["datos"]["Nombre"], "Total": locale.currency( float(total_fac), grouping=True), "MonedaDR" : "...." } ) 
+            emisores_coll.append( list(row_facturas))
+
+        #receptores_coll = list(receptores_coll)
+        return ({'elements': receptores_coll , 'emisores' : [emisores_coll] })
+
     def get_report_nomina(self, filters: dict):
         empresa      =  filters[0]['empresa']
         empleado     =  filters[0]['empleado']
         dataFrom     =  filters[0]['dataFrom']
         dataTo       =  filters[0]['dataTo']
             
-        if len(dataFrom) < 2:  
-            dataFrom = "2021-07-01" 
-        if len(dataTo) < 2:  
-            dataTo   = "2021-08-23" 
+        if dataFrom is None:   
+            dataFrom = "2021-01-01" 
+        if dataTo  is None:  
+            dataTo   = "2021-01-23" 
 
         client     = MongoClient("mongodb://root:drumb0t2o21@3.141.244.21:27017")
         db         = client["cfdi"]  
         collection = db["nomina"] 
         
         filer_date = {"$gte":  dataFrom, "$lte":  dataTo}
-
-        if len(empleado) > 2 : 
+  
+        if empleado is not None: 
             res = collection.aggregate([ { "$match": { "datos.Rfc": empresa, "Receptor.Rfc" : empleado, 
                                                    "nomina.FechaPago" : filer_date } }, 
                                      { "$group": { "_id": "$Receptor.Rfc",  } }, 
@@ -59,9 +199,8 @@ class RetentionReportService(ReportService):
                                                    "nomina.FechaPago" : filer_date } }, 
                                      { "$group": { "_id": "$Receptor.Rfc",  } }, 
                                      {"$sort": {"Receptor.Rfc": -1}}, 
-                                     {"$limit": 4}  
+                                     {"$limit": 8}  
                                     ])     
-
         empleados = []  
         movimientos = [] 
         index = 0 
@@ -75,7 +214,7 @@ class RetentionReportService(ReportService):
         total_otrospagos = 0 
         gen_nombre = "" 
         #list all the rfc's employees 
-        for doc in res:
+        for doc in res: 
             index = index+1 
             row_detalles = []
             total_deducciones   = 0 
@@ -146,14 +285,15 @@ class RetentionReportService(ReportService):
                                         }] 
                     total_otrospagos += float( otr["nomina"]["OtrosPagos"][index_otr]["Importe"] )
                 index_otr = index_otr + 1                      
-       
             empleados.append({"id": index, "empleado" : gen_nombre,     
-                              "rfc":  locale.currency( float( total_deducciones ), grouping=True) , "price": locale.currency( float( total_percepcciones ), grouping=True) , 
-                              "otrospagos":  locale.currency( float( total_otrospagos ), grouping=True) })    
+                              "rfc":  locale.currency( float( total_deducciones ), grouping=True) , 
+                              "price": locale.currency( float( total_percepcciones ), grouping=True) , 
+                              "otrospagos":  locale.currency( float( total_otrospagos ), grouping=True) }) 
+  
             row_detalles.append(  list( deducciones_arr ) )  
             row_detalles.append(  list( percepccion_arr ) ) 
             row_detalles.append(  list( otrospagos_arr  ) )
- 
+  
             movimientos.append(row_detalles) 
-            return ({'elements': empleados, 'percepciones': movimientos})
+        return ({'elements': empleados, 'percepciones': movimientos})
          

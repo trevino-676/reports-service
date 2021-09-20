@@ -8,7 +8,7 @@ load_dotenv(DOTENV_PATH)
 
 
 class Config:
-    """Set flask configuration from .env file"""
+    """Set flask configuration from .env file """
 
     # General Config
     SECRET_KEY = environ.get("SECRET_KEY")
@@ -20,4 +20,3 @@ class Config:
     MONGO_URI = environ.get("MONGO_URI")
     PRINCIPAL_COLLECTION = environ.get("PRINCIPAL_COLLECTION")
     PAGOS_NCC_COLLECTION = environ.get("PAGOS_NCC_COLLECTION")
-    NOMINAS_COLLECTION = environ.get("NOMINAS_COLLECTION")
